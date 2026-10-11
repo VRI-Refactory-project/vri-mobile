@@ -11,11 +11,10 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { styles } from "./SplashScreen.styles";
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen() {
+  // CHANGED: removed { navigation }
   const handleContinue = () => {
-
-    navigation.replace("Landing");
-
+    router.replace("/landing"); // CHANGED: was navigation.replace("Landing")
   };
 
   const handleLogin = () => {
