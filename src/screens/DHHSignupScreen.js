@@ -370,9 +370,9 @@ export default function DHHSignupScreen() {
                 Have an account?{" "}
               </Text>
               <TouchableOpacity
-                onPress={() => router.replace("/")}
+                onPress={() => router.replace("/login")}
                 accessibilityRole="button"
-                accessibilityLabel="Go to the welcome screen to sign in"
+                accessibilityLabel="Go to sign in"
               >
                 <Text style={styles.signInLink}>Sign in</Text>
               </TouchableOpacity>
