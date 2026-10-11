@@ -10,9 +10,9 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { styles } from "./SplashScreen.styles";
 
-export default function SplashScreen() {
+export default function SplashScreen({ navigation }) {
   const handleContinue = () => {
-    console.log("Continue clicked");
+    navigation.replace("Landing");
   };
 
   const handleLogin = () => {
