@@ -12,8 +12,9 @@ import { router } from "expo-router";
 import { styles } from "./SplashScreen.styles";
 
 export default function SplashScreen() {
+  // CHANGED: removed { navigation }
   const handleContinue = () => {
-    router.push("/signup");
+    router.replace("/landing"); // CHANGED: was navigation.replace("Landing")
   };
 
   const handleLogin = () => {
