@@ -52,7 +52,6 @@ export default function RoleSelectionPage() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* <Text style={styles.title}>Who's joining{"\n"}SignConnect?</Text> */}
           <Text style={styles.title}>Who&apos;s joining{"\n"}SignConnect?</Text>
           <Text style={styles.subtitle}>
             Pick the one that fits you best. You can add another one later.
