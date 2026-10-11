@@ -17,7 +17,7 @@ export default function SplashScreen() {
   };
 
   const handleLogin = () => {
-    console.log("Log in clicked");
+    router.push("/login");
   };
 
   return (
