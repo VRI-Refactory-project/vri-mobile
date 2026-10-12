@@ -1,5 +1,5 @@
 // V2-003 step 3: shows where the interpreter's certification review stands.
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Redirect, router } from "expo-router";
@@ -16,31 +16,40 @@ export default function PendingVerificationScreen() {
 
   const user = getCurrentUser();
 
-  // Fetches the profile. It sets state only after the request returns, so it is safe to call from an effect.
-  const fetchProfile = useCallback(async () => {
-    try {
-      setProfile(await getInterpreterProfile());
-      setError("");
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 401) {
-        await endSession();
-        router.replace("/login");
-        return;
-      }
-      setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Bumped by "Check status" / "Try again" to load the profile again.
+  const [reloadKey, setReloadKey] = useState(0);
 
+  const role = user?.role;
   useEffect(() => {
-    if (user?.role === "interpreter") fetchProfile();
-  }, [user?.role, fetchProfile]);
+    if (role !== "interpreter") return;
+    let active = true;
+    getInterpreterProfile()
+      .then((result) => {
+        if (!active) return;
+        setProfile(result);
+        setError("");
+      })
+      .catch(async (e: unknown) => {
+        if (!active) return;
+        if (e instanceof ApiError && e.status === 401) {
+          await endSession();
+          router.replace("/login");
+          return;
+        }
+        setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [role, reloadKey]);
 
   const load = () => {
     setLoading(true);
     setError("");
-    fetchProfile();
+    setReloadKey((key) => key + 1);
   };
 
   if (!user) return <Redirect href="/login" />;
