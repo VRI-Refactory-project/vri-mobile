@@ -7,7 +7,7 @@ export default function PasswordRecoveryRoute() {
 
   return (
     <PasswordRecoveryScreen
-      mode="request"
+      mode="forgot"
       email={email}
       onEmailChange={setEmail}
       onSendResetLink={() => Alert.alert("Sending reset link to " + email)}
