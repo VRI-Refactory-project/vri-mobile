@@ -8,15 +8,17 @@ import {
   StatusBar,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { styles } from "./SplashScreen.styles";
 
 export default function SplashScreen() {
+  // CHANGED: removed { navigation }
   const handleContinue = () => {
-    console.log("Continue clicked");
+    router.replace("/landing"); // CHANGED: was navigation.replace("Landing")
   };
 
   const handleLogin = () => {
-    console.log("Log in clicked");
+    router.push("/login");
   };
 
   return (
@@ -41,6 +43,8 @@ export default function SplashScreen() {
         <TouchableOpacity
           style={styles.continueButton}
           onPress={handleContinue}
+          accessibilityRole="button"
+          accessibilityLabel="Continue to create an account"
         >
           <Text style={styles.continueText}>Continue</Text>
           <Feather name="chevron-right" size={20} color="#3B2978" />
