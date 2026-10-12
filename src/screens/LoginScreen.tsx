@@ -84,7 +84,8 @@ export default function LoginScreen() {
         );
         return;
       }
-      router.replace("/home");
+      // Interpreters see their certification status first; it also tells them if an upload is still needed.
+      router.replace(user.role === "interpreter" ? "/pending" : "/home");
     } catch (error) {
       setSubmitting(false);
       if (error instanceof ApiError) {
