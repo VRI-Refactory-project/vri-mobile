@@ -2,9 +2,6 @@ import { StyleSheet } from "react-native";
 
 // Values measured from the login design (375pt frame).
 
-// marginTop + bar + text spacing + text line height of the step indicator below the card.
-export const STEPS_BLOCK_HEIGHT = 72 + 3 + 22 + 16;
-
 export const colors = {
   primary: "#4A3A9A",
   heading: "#1B1530",
@@ -24,33 +21,42 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
   },
   background: {
-    position: "absolute",
-    top: 0,
-    left: 0,
+    ...StyleSheet.absoluteFill,
+    width: "100%",
+    height: "100%",
   },
+  // Purple tint over the photo so the white logo and card stand out.
   scrim: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(16, 12, 40, 0.1)",
+    backgroundColor: "rgba(35, 28, 89, 0.55)",
   },
   flex: {
     flex: 1,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 120,
+    height: 80,
+  },
   backButton: {
-    position: "absolute",
-    right: 32,
-    zIndex: 1,
-    height: 32,
+    height: 36,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 10,
-    paddingRight: 14,
-    borderRadius: 10,
-    backgroundColor: "rgba(240, 240, 244, 0.92)",
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.45)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
   },
   backText: {
-    color: colors.heading,
+    color: colors.white,
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: "600",
     marginLeft: 6,
   },
   scrollContent: {
@@ -128,8 +134,10 @@ export const styles = StyleSheet.create({
     height: 44,
     borderRadius: 10,
     backgroundColor: colors.primary,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: 6,
   },
   loginButtonBusy: {
     opacity: 0.8,
@@ -149,33 +157,5 @@ export const styles = StyleSheet.create({
   forgotText: {
     color: colors.muted,
     fontSize: 13,
-  },
-  steps: {
-    width: "100%",
-    maxWidth: 420,
-    alignSelf: "center",
-    marginTop: 72,
-    alignItems: "center",
-  },
-  stepBars: {
-    flexDirection: "row",
-    alignSelf: "stretch",
-    marginHorizontal: -5,
-    gap: 12,
-  },
-  stepBar: {
-    flex: 1,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
-  },
-  stepBarActive: {
-    backgroundColor: colors.white,
-  },
-  stepText: {
-    color: colors.white,
-    fontSize: 12,
-    lineHeight: 16,
-    marginTop: 22,
   },
 });
