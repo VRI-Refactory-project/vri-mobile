@@ -30,6 +30,7 @@ import { form, ui } from "../theme/ui";
 
 type FieldName = "firstname" | "lastname" | "phone" | "email" | "password" | "terms";
 type Errors = Partial<Record<FieldName, string>>;
+type InputName = "firstname" | "lastname" | "email" | "password";
 
 const SPECIALISATIONS: { value: Specialisation; label: string }[] = [
   { value: "GENERAL", label: "General" },
@@ -38,6 +39,27 @@ const SPECIALISATIONS: { value: Specialisation; label: string }[] = [
 ];
 
 const FIELD_ORDER: FieldName[] = ["firstname", "lastname", "phone", "email", "password", "terms"];
+
+type IconInputProps = React.ComponentPropsWithRef<typeof TextInput> & {
+  icon: React.ComponentProps<typeof Feather>["name"];
+  hasError: boolean;
+  right?: React.ReactNode;
+};
+
+// A text input with an icon on the left (and an optional control on the right), like the web form.
+function IconInput({ icon, hasError, right, ...inputProps }: IconInputProps) {
+  return (
+    <View>
+      <Feather name={icon} size={16} color={ui.muted} style={styles.icon} />
+      <TextInput
+        style={[form.input, styles.withIcon, right ? styles.withRight : null, hasError ? form.inputError : null]}
+        placeholderTextColor={ui.placeholder}
+        {...inputProps}
+      />
+      {right}
+    </View>
+  );
+}
 
 export default function InterpreterSignupScreen() {
   const [values, setValues] = useState({ firstname: "", lastname: "", phone: "", email: "", password: "" });
@@ -52,10 +74,9 @@ export default function InterpreterSignupScreen() {
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const lastnameRef = useRef<TextInput>(null);
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
-  const firstnameRef = useRef<TextInput>(null);
+  // Each text input registers itself here, so a field can be focused from an event handler.
+  const inputs = useRef<Partial<Record<InputName, TextInput | null>>>({});
+  const focusField = (name: InputName) => inputs.current[name]?.focus();
 
   const set = (name: keyof typeof values) => (text: string) => {
     setValues((current) => ({ ...current, [name]: text }));
@@ -87,10 +108,7 @@ export default function InterpreterSignupScreen() {
     const firstInvalid = FIELD_ORDER.find((name) => errors[name]);
     if (firstInvalid) {
       AccessibilityInfo.announceForAccessibility(errors[firstInvalid] ?? "");
-      if (firstInvalid === "firstname") firstnameRef.current?.focus();
-      if (firstInvalid === "lastname") lastnameRef.current?.focus();
-      if (firstInvalid === "email") emailRef.current?.focus();
-      if (firstInvalid === "password") passwordRef.current?.focus();
+      if (firstInvalid !== "phone" && firstInvalid !== "terms") focusField(firstInvalid);
       return;
     }
 
@@ -126,30 +144,6 @@ export default function InterpreterSignupScreen() {
       </Text>
     ) : null;
 
-  // A text input with an icon on the left, like the web form.
-  const iconInput = (
-    name: "firstname" | "lastname" | "email" | "password",
-    icon: React.ComponentProps<typeof Feather>["name"],
-    props: React.ComponentProps<typeof TextInput>,
-    ref?: React.RefObject<TextInput | null>,
-    right?: React.ReactNode,
-  ) => (
-    <View>
-      <Feather name={icon} size={16} color={ui.muted} style={styles.icon} />
-      <TextInput
-        ref={ref}
-        style={[form.input, styles.withIcon, right ? styles.withRight : null, shown(name) ? form.inputError : null]}
-        value={values[name]}
-        onChangeText={set(name)}
-        onBlur={touch(name)}
-        placeholderTextColor={ui.placeholder}
-        editable={!submitting}
-        {...props}
-      />
-      {right}
-    </View>
-  );
-
   return (
     <SafeAreaView style={form.screen}>
       <KeyboardAvoidingView style={form.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -164,36 +158,44 @@ export default function InterpreterSignupScreen() {
           </Text>
 
           <Text style={form.label}>First name</Text>
-          {iconInput(
-            "firstname",
-            "user",
-            {
-              placeholder: "Your first name",
-              autoComplete: "given-name",
-              textContentType: "givenName",
-              returnKeyType: "next",
-              onSubmitEditing: () => lastnameRef.current?.focus(),
-              maxLength: 75,
-              accessibilityLabel: "First name",
-            },
-            firstnameRef,
-          )}
+          <IconInput
+            ref={(node) => {
+              inputs.current.firstname = node;
+            }}
+            icon="user"
+            hasError={Boolean(shown("firstname"))}
+            value={values.firstname}
+            onChangeText={set("firstname")}
+            onBlur={touch("firstname")}
+            editable={!submitting}
+            placeholder="Your first name"
+            autoComplete="given-name"
+            textContentType="givenName"
+            returnKeyType="next"
+            onSubmitEditing={() => focusField("lastname")}
+            maxLength={75}
+            accessibilityLabel="First name"
+          />
           {message("firstname")}
 
           <Text style={form.label}>Last name</Text>
-          {iconInput(
-            "lastname",
-            "user",
-            {
-              placeholder: "Your last name",
-              autoComplete: "family-name",
-              textContentType: "familyName",
-              returnKeyType: "next",
-              maxLength: 75,
-              accessibilityLabel: "Last name",
-            },
-            lastnameRef,
-          )}
+          <IconInput
+            ref={(node) => {
+              inputs.current.lastname = node;
+            }}
+            icon="user"
+            hasError={Boolean(shown("lastname"))}
+            value={values.lastname}
+            onChangeText={set("lastname")}
+            onBlur={touch("lastname")}
+            editable={!submitting}
+            placeholder="Your last name"
+            autoComplete="family-name"
+            textContentType="familyName"
+            returnKeyType="next"
+            maxLength={75}
+            accessibilityLabel="Last name"
+          />
           {message("lastname")}
 
           <Text style={form.label}>Phone number</Text>
@@ -209,22 +211,26 @@ export default function InterpreterSignupScreen() {
           {message("phone")}
 
           <Text style={form.label}>Email address</Text>
-          {iconInput(
-            "email",
-            "mail",
-            {
-              placeholder: "name@example.com",
-              keyboardType: "email-address",
-              autoCapitalize: "none",
-              autoCorrect: false,
-              autoComplete: "email",
-              textContentType: "emailAddress",
-              returnKeyType: "next",
-              onSubmitEditing: () => passwordRef.current?.focus(),
-              accessibilityLabel: "Email address",
-            },
-            emailRef,
-          )}
+          <IconInput
+            ref={(node) => {
+              inputs.current.email = node;
+            }}
+            icon="mail"
+            hasError={Boolean(shown("email"))}
+            value={values.email}
+            onChangeText={set("email")}
+            onBlur={touch("email")}
+            editable={!submitting}
+            placeholder="name@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="next"
+            onSubmitEditing={() => focusField("password")}
+            accessibilityLabel="Email address"
+          />
           {message("email")}
 
           <Text style={form.label}>Specialisation</Text>
@@ -247,30 +253,36 @@ export default function InterpreterSignupScreen() {
           </View>
 
           <Text style={form.label}>Password</Text>
-          {iconInput(
-            "password",
-            "lock",
-            {
-              placeholder: "At least 8 characters",
-              secureTextEntry: !showPassword,
-              autoCapitalize: "none",
-              autoCorrect: false,
-              autoComplete: "new-password",
-              textContentType: "newPassword",
-              returnKeyType: "done",
-              accessibilityLabel: "Password",
-            },
-            passwordRef,
-            <Pressable
-              style={styles.eye}
-              onPress={() => setShowPassword((visible) => !visible)}
-              accessibilityRole="button"
-              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
-              hitSlop={8}
-            >
-              <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={ui.muted} />
-            </Pressable>,
-          )}
+          <IconInput
+            ref={(node) => {
+              inputs.current.password = node;
+            }}
+            icon="lock"
+            hasError={Boolean(shown("password"))}
+            value={values.password}
+            onChangeText={set("password")}
+            onBlur={touch("password")}
+            editable={!submitting}
+            placeholder="At least 8 characters"
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="new-password"
+            textContentType="newPassword"
+            returnKeyType="done"
+            accessibilityLabel="Password"
+            right={
+              <Pressable
+                style={styles.eye}
+                onPress={() => setShowPassword((visible) => !visible)}
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                hitSlop={8}
+              >
+                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={ui.muted} />
+              </Pressable>
+            }
+          />
           {message("password")}
 
           <Pressable
