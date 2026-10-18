@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import {
   AccessibilityInfo,
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -11,7 +10,6 @@ import {
   Text,
   TextInput,
   View,
-  useWindowDimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
@@ -21,19 +19,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ApiError } from "../services/api";
 import { login } from "../services/auth";
 import { endSession } from "../services/session";
-import { STEPS_BLOCK_HEIGHT, colors, styles } from "./LoginScreen.styles";
+import { colors, styles } from "./LoginScreen.styles";
 import { validateLogin, type LoginErrors } from "./LoginScreen.validation";
 
-// Landscape photo (1671x941). It fills the screen height and is anchored left, so the signer stays in view.
-const background = require("../../assets/images/interpreter4.png");
-const backgroundAspectRatio = 1671 / 941;
-
-const TOTAL_STEPS = 3;
-const CURRENT_STEP = 3;
+// Portrait photo (853x1844), so it covers a phone screen without the landscape crop.
+const background = require("../../assets/images/interpreter2.png");
+const logo = require("../../assets/images/logo.png");
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const { height: windowHeight } = useWindowDimensions();
   const passwordRef = useRef<TextInput>(null);
 
   const [identifier, setIdentifier] = useState("");
@@ -56,7 +50,7 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
-    Alert.alert("Forgot password", "Password recovery is not available in the app yet.");
+    router.push("/password-recovery");
   };
 
   const handleLogin = async () => {
@@ -114,28 +108,38 @@ export default function LoginScreen() {
 
       <Image
         source={background}
-        style={[
-          styles.background,
-          { height: windowHeight, width: windowHeight * backgroundAspectRatio },
-        ]}
-        blurRadius={2}
+        style={styles.background}
+        resizeMode="cover"
         accessibilityIgnoresInvertColors
       />
       <View style={styles.scrim} />
+
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <Image
+          source={logo}
+          style={styles.logo}
+          resizeMode="contain"
+          accessible
+          accessibilityLabel="SignConnect logo"
+        />
+        <Pressable
+          style={styles.backButton}
+          onPress={handleBack}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Feather name="arrow-left" size={16} color={colors.white} />
+          <Text style={styles.backText}>Back</Text>
+        </Pressable>
+      </View>
 
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            // Extra top padding the height of the step indicator keeps the card itself centred on screen.
-            {
-              paddingTop: insets.top + 16 + STEPS_BLOCK_HEIGHT,
-              paddingBottom: insets.bottom + 16,
-            },
-          ]}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -153,7 +157,7 @@ export default function LoginScreen() {
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>
-                Email address
+                Email or phone number
               </Text>
               <TextInput
                 style={[styles.input, errors.identifier && styles.inputError]}
@@ -162,9 +166,8 @@ export default function LoginScreen() {
                   setIdentifier(value);
                   setErrors((previous) => ({ ...previous, identifier: undefined }));
                 }}
-                placeholder="name@example.com"
+                placeholder="name@example.com or +256 772 123 456"
                 placeholderTextColor={colors.placeholder}
-                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="username"
@@ -173,8 +176,7 @@ export default function LoginScreen() {
                 submitBehavior="submit"
                 onSubmitEditing={() => passwordRef.current?.focus()}
                 editable={!submitting}
-                accessibilityLabel="Email address"
-                accessibilityHint="You can also sign in with your phone number"
+                accessibilityLabel="Email or phone number"
               />
               {renderFieldError(errors.identifier)}
             </View>
@@ -217,7 +219,10 @@ export default function LoginScreen() {
               {submitting ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                <Text style={styles.loginText}>Login</Text>
+                <>
+                  <Text style={styles.loginText}>Login</Text>
+                  <Feather name="chevron-right" size={18} color={colors.white} />
+                </>
               )}
             </Pressable>
 
@@ -229,37 +234,8 @@ export default function LoginScreen() {
               <Text style={styles.forgotText}>Forgot Password?</Text>
             </Pressable>
           </View>
-
-          <View
-            style={styles.steps}
-            accessible
-            accessibilityLabel={`Step ${CURRENT_STEP} of ${TOTAL_STEPS}`}
-          >
-            <View style={styles.stepBars}>
-              {Array.from({ length: TOTAL_STEPS }, (_, index) => (
-                <View
-                  key={index}
-                  style={[styles.stepBar, index === CURRENT_STEP - 1 && styles.stepBarActive]}
-                />
-              ))}
-            </View>
-            <Text style={styles.stepText}>
-              Step {CURRENT_STEP} of {TOTAL_STEPS}
-            </Text>
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-      <Pressable
-        style={[styles.backButton, { top: insets.top + 22 }]}
-        onPress={handleBack}
-        hitSlop={8}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-      >
-        <Feather name="chevron-left" size={18} color={colors.heading} />
-        <Text style={styles.backText}>Back</Text>
-      </Pressable>
     </View>
   );
 }
