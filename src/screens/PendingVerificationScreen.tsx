@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ApiError } from "../services/api";
 import { getInterpreterProfile, type InterpreterProfile } from "../services/interpreter";
+import { needsEmailVerification } from "../services/auth";
 import { endSession, getCurrentUser } from "../services/session";
 
 export default function PendingVerificationScreen() {
@@ -54,6 +55,7 @@ export default function PendingVerificationScreen() {
 
   if (!user) return <Redirect href="/login" />;
   if (user.role !== "interpreter") return <Redirect href="/home" />;
+  if (needsEmailVerification(user)) return <Redirect href="/verify-email" />;
 
   const handleSignOut = async () => {
     await endSession();
@@ -85,8 +87,6 @@ export default function PendingVerificationScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.step}>Step 3 of 3</Text>
-
         {loading && !profile ? (
           <ActivityIndicator color={colors.primary} style={styles.loader} />
         ) : error && !profile ? (
@@ -128,8 +128,8 @@ export default function PendingVerificationScreen() {
             ) : null}
 
             {status === "APPROVED" ? (
-              <Pressable style={styles.button} onPress={() => router.replace("/home")} accessibilityRole="button">
-                <Text style={styles.buttonText}>Continue</Text>
+              <Pressable style={styles.button} onPress={() => router.replace("/interpreter-dashboard")} accessibilityRole="button">
+                <Text style={styles.buttonText}>Go to dashboard</Text>
               </Pressable>
             ) : (
               <>
