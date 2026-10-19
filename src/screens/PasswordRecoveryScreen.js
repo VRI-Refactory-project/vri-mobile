@@ -178,10 +178,6 @@
 //   );
 // }
 
-
-
-
-
 import React, { useState } from "react";
 import {
   Alert,
@@ -202,8 +198,7 @@ import { styles } from "./PasswordRecoveryScreen.styles";
 const BACKGROUND_IMAGE = require("../../assets/images/password-recovery-bg.png");
 const LOGO_IMAGE = require("../../assets/images/logo.png");
 
-const validEmail = (value) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const validPhone = (value) => {
   const digits = value.replace(/\D/g, "");
@@ -255,7 +250,7 @@ export default function PasswordRecoveryScreen({
     } else {
       Alert.alert(
         "Password recovery",
-        "The contact information is valid. Connect the recovery API to send the verification code."
+        "The contact information is valid. Connect the recovery API to send the verification code.",
       );
     }
   };
@@ -292,7 +287,7 @@ export default function PasswordRecoveryScreen({
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -366,10 +361,7 @@ export default function PasswordRecoveryScreen({
                   onEmailChange(value);
                   setEmailError("");
                 }}
-                style={[
-                  styles.input,
-                  emailError ? styles.inputError : null,
-                ]}
+                style={[styles.input, emailError ? styles.inputError : null]}
                 placeholder={
                   isReset
                     ? "name@example.com"
@@ -439,9 +431,7 @@ export default function PasswordRecoveryScreen({
                   />
 
                   {confirmPasswordError ? (
-                    <Text style={styles.error}>
-                      {confirmPasswordError}
-                    </Text>
+                    <Text style={styles.error}>{confirmPasswordError}</Text>
                   ) : null}
                 </View>
               </>
@@ -450,20 +440,14 @@ export default function PasswordRecoveryScreen({
             <TouchableOpacity
               accessibilityRole="button"
               style={styles.primaryButton}
-              onPress={
-                isReset ? handleResetPassword : handleSendResetLink
-              }
+              onPress={isReset ? handleResetPassword : handleSendResetLink}
               activeOpacity={0.85}
             >
               <Text style={styles.buttonText}>
                 {isReset ? "Reset password" : "Send code"}
               </Text>
 
-              <Feather
-                name="chevron-right"
-                size={18}
-                color="#FFFFFF"
-              />
+              <Feather name="chevron-right" size={18} color="#FFFFFF" />
             </TouchableOpacity>
 
             <TouchableOpacity

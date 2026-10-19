@@ -40,7 +40,11 @@ export type PickedFile = {
 
 // The API accepts these (FileExtensionValidator on CertificationDocument.document).
 export const ALLOWED_EXTENSIONS = ["pdf", "jpg", "jpeg", "png"];
-export const ALLOWED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+export const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+];
 // The API sets no size limit; keep uploads reasonable for mobile data.
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
@@ -89,5 +93,8 @@ export function uploadCertification(
   }
   form.append("certificate_type", certificateType.trim());
   form.append("issuing_organisation", issuingOrganisation.trim());
-  return postForm<CertificationDocument>("/api/v1/interpreters/certifications/upload/", form);
+  return postForm<CertificationDocument>(
+    "/api/v1/interpreters/certifications/upload/",
+    form,
+  );
 }

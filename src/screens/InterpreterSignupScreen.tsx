@@ -25,10 +25,14 @@ import {
   validatePhoneNumber,
 } from "../lib/validation";
 import { ApiError } from "../services/api";
-import { registerInterpreter, type Specialisation } from "../services/interpreter";
+import {
+  registerInterpreter,
+  type Specialisation,
+} from "../services/interpreter";
 import { form, ui } from "../theme/ui";
 
-type FieldName = "firstname" | "lastname" | "phone" | "email" | "password" | "terms";
+type FieldName =
+  "firstname" | "lastname" | "phone" | "email" | "password" | "terms";
 type Errors = Partial<Record<FieldName, string>>;
 type InputName = "firstname" | "lastname" | "email" | "password";
 
@@ -38,7 +42,14 @@ const SPECIALISATIONS: { value: Specialisation; label: string }[] = [
   { value: "LEGAL", label: "Legal" },
 ];
 
-const FIELD_ORDER: FieldName[] = ["firstname", "lastname", "phone", "email", "password", "terms"];
+const FIELD_ORDER: FieldName[] = [
+  "firstname",
+  "lastname",
+  "phone",
+  "email",
+  "password",
+  "terms",
+];
 
 type IconInputProps = React.ComponentPropsWithRef<typeof TextInput> & {
   icon: React.ComponentProps<typeof Feather>["name"];
@@ -52,7 +63,12 @@ function IconInput({ icon, hasError, right, ...inputProps }: IconInputProps) {
     <View>
       <Feather name={icon} size={16} color={ui.muted} style={styles.icon} />
       <TextInput
-        style={[form.input, styles.withIcon, right ? styles.withRight : null, hasError ? form.inputError : null]}
+        style={[
+          form.input,
+          styles.withIcon,
+          right ? styles.withRight : null,
+          hasError ? form.inputError : null,
+        ]}
         placeholderTextColor={ui.placeholder}
         {...inputProps}
       />
@@ -62,16 +78,25 @@ function IconInput({ icon, hasError, right, ...inputProps }: IconInputProps) {
 }
 
 export default function InterpreterSignupScreen() {
-  const [values, setValues] = useState({ firstname: "", lastname: "", phone: "", email: "", password: "" });
+  const [values, setValues] = useState({
+    firstname: "",
+    lastname: "",
+    phone: "",
+    email: "",
+    password: "",
+  });
   const [agreed, setAgreed] = useState(false);
-  const [specialisation, setSpecialisation] = useState<Specialisation>("GENERAL");
+  const [specialisation, setSpecialisation] =
+    useState<Specialisation>("GENERAL");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   // Errors from the server for one field; cleared when that field is edited.
   const [serverErrors, setServerErrors] = useState<Errors>({});
   // An error shows once the person has left the field, or tried to submit.
-  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
+  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>(
+    {},
+  );
   const [submitted, setSubmitted] = useState(false);
 
   // Each text input registers itself here, so a field can be focused from an event handler.
@@ -82,7 +107,8 @@ export default function InterpreterSignupScreen() {
     setValues((current) => ({ ...current, [name]: text }));
     setServerErrors((current) => ({ ...current, [name]: undefined }));
   };
-  const touch = (name: FieldName) => () => setTouched((current) => ({ ...current, [name]: true }));
+  const touch = (name: FieldName) => () =>
+    setTouched((current) => ({ ...current, [name]: true }));
 
   // Worked out from the form on every render, so a submit never reads out-of-date results.
   const errors: Errors = {
@@ -91,10 +117,13 @@ export default function InterpreterSignupScreen() {
     phone: validatePhoneNumber(values.phone),
     email: validateEmail(values.email),
     password: validatePassword(values.password),
-    terms: agreed ? undefined : "Accept the Terms and Privacy Policy to continue.",
+    terms: agreed
+      ? undefined
+      : "Accept the Terms and Privacy Policy to continue.",
   };
   const shown = (name: FieldName) =>
-    serverErrors[name] ?? (touched[name] || submitted ? errors[name] : undefined);
+    serverErrors[name] ??
+    (touched[name] || submitted ? errors[name] : undefined);
 
   const announce = (message: string) => {
     setFormError(message);
@@ -108,7 +137,8 @@ export default function InterpreterSignupScreen() {
     const firstInvalid = FIELD_ORDER.find((name) => errors[name]);
     if (firstInvalid) {
       AccessibilityInfo.announceForAccessibility(errors[firstInvalid] ?? "");
-      if (firstInvalid !== "phone" && firstInvalid !== "terms") focusField(firstInvalid);
+      if (firstInvalid !== "phone" && firstInvalid !== "terms")
+        focusField(firstInvalid);
       return;
     }
 
@@ -127,7 +157,12 @@ export default function InterpreterSignupScreen() {
       if (error instanceof ApiError) {
         const { full_name, phone_number, email, password } = error.fieldErrors;
         if (full_name || phone_number || email || password) {
-          setServerErrors({ firstname: full_name, phone: phone_number, email, password });
+          setServerErrors({
+            firstname: full_name,
+            phone: phone_number,
+            email,
+            password,
+          });
         } else {
           announce(error.message);
         }
@@ -146,15 +181,21 @@ export default function InterpreterSignupScreen() {
 
   return (
     <SafeAreaView style={form.screen}>
-      <KeyboardAvoidingView style={form.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={form.content} keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView
+        style={form.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={form.content}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={form.step}>Step 2 of 3</Text>
           <Text style={form.title} accessibilityRole="header">
             Create your account
           </Text>
           <Text style={form.subtitle}>
-            Next you will upload your certificates, then confirm your email. An administrator reviews your account
-            before you can receive requests.
+            Next you will upload your certificates, then confirm your email. An
+            administrator reviews your account before you can receive requests.
           </Text>
 
           <Text style={form.label}>First name</Text>
@@ -246,7 +287,14 @@ export default function InterpreterSignupScreen() {
                   accessibilityRole="radio"
                   accessibilityState={{ selected }}
                 >
-                  <Text style={[styles.chipText, selected ? styles.chipTextSelected : null]}>{option.label}</Text>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selected ? styles.chipTextSelected : null,
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -276,10 +324,16 @@ export default function InterpreterSignupScreen() {
                 style={styles.eye}
                 onPress={() => setShowPassword((visible) => !visible)}
                 accessibilityRole="button"
-                accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                accessibilityLabel={
+                  showPassword ? "Hide password" : "Show password"
+                }
                 hitSlop={8}
               >
-                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={ui.muted} />
+                <Feather
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  color={ui.muted}
+                />
               </Pressable>
             }
           />
@@ -295,8 +349,14 @@ export default function InterpreterSignupScreen() {
             accessibilityRole="checkbox"
             accessibilityState={{ checked: agreed }}
           >
-            <Feather name={agreed ? "check-square" : "square"} size={22} color={shown("terms") ? ui.error : ui.primary} />
-            <Text style={styles.termsText}>I agree to the Terms and Privacy Policy</Text>
+            <Feather
+              name={agreed ? "check-square" : "square"}
+              size={22}
+              color={shown("terms") ? ui.error : ui.primary}
+            />
+            <Text style={styles.termsText}>
+              I agree to the Terms and Privacy Policy
+            </Text>
           </Pressable>
           {message("terms")}
 
@@ -313,10 +373,18 @@ export default function InterpreterSignupScreen() {
             accessibilityRole="button"
             accessibilityState={{ busy: submitting, disabled: submitting }}
           >
-            {submitting ? <ActivityIndicator color={ui.white} /> : <Text style={form.buttonText}>Continue</Text>}
+            {submitting ? (
+              <ActivityIndicator color={ui.white} />
+            ) : (
+              <Text style={form.buttonText}>Continue</Text>
+            )}
           </Pressable>
 
-          <Pressable style={form.link} onPress={() => router.replace("/login")} accessibilityRole="button">
+          <Pressable
+            style={form.link}
+            onPress={() => router.replace("/login")}
+            accessibilityRole="button"
+          >
             <Text style={form.linkText}>I already have an account</Text>
           </Pressable>
         </ScrollView>

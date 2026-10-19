@@ -185,7 +185,11 @@ export const COUNTRIES: Country[] = [
   { iso: "RW", name: "Rwanda", dial: "250" },
   { iso: "RE", name: "Réunion", dial: "262" },
   { iso: "BL", name: "Saint Barthélemy", dial: "590" },
-  { iso: "SH", name: "Saint Helena, Ascension and Tristan da Cunha", dial: "290" },
+  {
+    iso: "SH",
+    name: "Saint Helena, Ascension and Tristan da Cunha",
+    dial: "290",
+  },
   { iso: "KN", name: "Saint Kitts and Nevis", dial: "1" },
   { iso: "LC", name: "Saint Lucia", dial: "1" },
   { iso: "MF", name: "Saint Martin", dial: "590" },
@@ -253,9 +257,14 @@ export const COUNTRIES: Country[] = [
 
 /** Flag emoji from a two-letter ISO country code, e.g. "UG" gives the Uganda flag. */
 export function flagEmoji(iso: string): string {
-  return String.fromCodePoint(...[...iso.toUpperCase()].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65));
+  return String.fromCodePoint(
+    ...[...iso.toUpperCase()].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65),
+  );
 }
 
 export function findCountry(iso: string): Country {
-  return COUNTRIES.find((country) => country.iso === iso) ?? COUNTRIES.find((c) => c.iso === DEFAULT_COUNTRY)!;
+  return (
+    COUNTRIES.find((country) => country.iso === iso) ??
+    COUNTRIES.find((c) => c.iso === DEFAULT_COUNTRY)!
+  );
 }

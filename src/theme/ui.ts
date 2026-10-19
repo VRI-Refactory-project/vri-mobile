@@ -20,8 +20,20 @@ export const form = StyleSheet.create({
   content: { padding: 24, paddingBottom: 40 },
   step: { color: ui.primary, fontSize: 13, fontWeight: "600", marginBottom: 6 },
   title: { color: ui.heading, fontSize: 24, fontWeight: "700" },
-  subtitle: { color: ui.muted, fontSize: 14, lineHeight: 20, marginTop: 8, marginBottom: 12 },
-  label: { color: ui.heading, fontSize: 14, fontWeight: "600", marginTop: 16, marginBottom: 6 },
+  subtitle: {
+    color: ui.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  label: {
+    color: ui.heading,
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 16,
+    marginBottom: 6,
+  },
   input: {
     height: 48,
     borderRadius: 10,
@@ -45,6 +57,11 @@ export const form = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.7 },
   buttonText: { color: ui.white, fontSize: 16, fontWeight: "600" },
-  link: { height: 44, alignItems: "center", justifyContent: "center", marginTop: 12 },
+  link: {
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 12,
+  },
   linkText: { color: ui.primary, fontSize: 15, fontWeight: "600" },
 });

@@ -15,10 +15,6 @@
       "favicon": "./assets/images/logo.png"
     },
     "scheme": "vrimobile",
-    "plugins": [
-      "expo-router",
-      "expo-font",
-      "expo-secure-store"
-    ]
+    "plugins": ["expo-router", "expo-font", "expo-secure-store"]
   }
 }

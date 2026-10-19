@@ -273,7 +273,6 @@ function toApiError(status: number, data: unknown): ApiError {
       fieldErrors[key] = text;
     }
   }
-
   return new ApiError(
     message || "Please check your details and try again.",
     status,

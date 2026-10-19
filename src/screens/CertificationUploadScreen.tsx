@@ -28,14 +28,24 @@ import {
 import { needsEmailVerification } from "../services/auth";
 import { getCurrentUser } from "../services/session";
 
-type Errors = { document?: string; certificate_type?: string; issuing_organisation?: string };
+type Errors = {
+  document?: string;
+  certificate_type?: string;
+  issuing_organisation?: string;
+};
 
 function formatSize(bytes?: number) {
   if (bytes === undefined) return "";
-  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return bytes >= 1024 * 1024
+    ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-function validate(file: PickedFile | null, type: string, organisation: string): Errors {
+function validate(
+  file: PickedFile | null,
+  type: string,
+  organisation: string,
+): Errors {
   const errors: Errors = {};
   if (!file) {
     errors.document = "Choose your certificate (PDF, JPG or PNG).";
@@ -48,8 +58,11 @@ function validate(file: PickedFile | null, type: string, organisation: string): 
       errors.document = `That file is ${formatSize(file.size)}. The limit is ${formatSize(MAX_FILE_BYTES)}.`;
     }
   }
-  if (!type.trim()) errors.certificate_type = "Enter the type of certificate, e.g. Sign Language Interpreter.";
-  if (!organisation.trim()) errors.issuing_organisation = "Enter the organisation that issued it.";
+  if (!type.trim())
+    errors.certificate_type =
+      "Enter the type of certificate, e.g. Sign Language Interpreter.";
+  if (!organisation.trim())
+    errors.issuing_organisation = "Enter the organisation that issued it.";
   return errors;
 }
 
@@ -78,7 +91,13 @@ export default function CertificationUploadScreen() {
     });
     if (result.canceled) return;
     const asset = result.assets[0];
-    setFile({ uri: asset.uri, name: asset.name, mimeType: asset.mimeType, size: asset.size, file: asset.file });
+    setFile({
+      uri: asset.uri,
+      name: asset.name,
+      mimeType: asset.mimeType,
+      size: asset.size,
+      file: asset.file,
+    });
     setErrors((current) => ({ ...current, document: undefined }));
     setFormError("");
   };
@@ -88,7 +107,10 @@ export default function CertificationUploadScreen() {
     const nextErrors = validate(file, certificateType, organisation);
     setErrors(nextErrors);
     setFormError("");
-    const firstError = nextErrors.document ?? nextErrors.certificate_type ?? nextErrors.issuing_organisation;
+    const firstError =
+      nextErrors.document ??
+      nextErrors.certificate_type ??
+      nextErrors.issuing_organisation;
     if (firstError || !file) {
       AccessibilityInfo.announceForAccessibility(firstError ?? "");
       return;
@@ -99,7 +121,11 @@ export default function CertificationUploadScreen() {
       await uploadCertification(file, certificateType, organisation);
       // Registration order: account, certificates, verify email, then wait for the admin review.
       const current = getCurrentUser();
-      router.replace(current && needsEmailVerification(current) ? "/verify-email" : "/pending");
+      router.replace(
+        current && needsEmailVerification(current)
+          ? "/verify-email"
+          : "/pending",
+      );
     } catch (error) {
       setSubmitting(false);
       if (error instanceof ApiError) {
@@ -107,7 +133,8 @@ export default function CertificationUploadScreen() {
           router.replace("/login");
           return;
         }
-        const { document, certificate_type, issuing_organisation } = error.fieldErrors;
+        const { document, certificate_type, issuing_organisation } =
+          error.fieldErrors;
         if (document || certificate_type || issuing_organisation) {
           setErrors({ document, certificate_type, issuing_organisation });
         } else {
@@ -128,15 +155,21 @@ export default function CertificationUploadScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.step}>Step 3 of 3</Text>
           <Text style={styles.title} accessibilityRole="header">
             Upload your certification
           </Text>
           <Text style={styles.subtitle}>
-            An administrator reviews your certificate before your account is activated. You will not receive requests
-            until it is approved.
+            An administrator reviews your certificate before your account is
+            activated. You will not receive requests until it is approved.
           </Text>
 
           <Text style={styles.label}>Certificate file</Text>
@@ -145,15 +178,27 @@ export default function CertificationUploadScreen() {
             onPress={handlePick}
             disabled={submitting}
             accessibilityRole="button"
-            accessibilityLabel={file ? "Change selected certificate file" : "Choose certificate file"}
+            accessibilityLabel={
+              file
+                ? "Change selected certificate file"
+                : "Choose certificate file"
+            }
           >
-            <Feather name={file ? "file-text" : "upload"} size={22} color={colors.primary} />
+            <Feather
+              name={file ? "file-text" : "upload"}
+              size={22}
+              color={colors.primary}
+            />
             <View style={styles.pickerText}>
               <Text style={styles.pickerTitle} numberOfLines={1}>
                 {file ? file.name : "Choose a PDF, JPG or PNG"}
               </Text>
               <Text style={styles.pickerHint}>
-                {file ? [formatSize(file.size), "tap to change"].filter(Boolean).join(" · ") : "Up to 10 MB"}
+                {file
+                  ? [formatSize(file.size), "tap to change"]
+                      .filter(Boolean)
+                      .join(" · ")
+                  : "Up to 10 MB"}
               </Text>
             </View>
           </Pressable>
@@ -161,7 +206,10 @@ export default function CertificationUploadScreen() {
 
           <Text style={styles.label}>Type of certificate</Text>
           <TextInput
-            style={[styles.input, errors.certificate_type ? styles.inputError : null]}
+            style={[
+              styles.input,
+              errors.certificate_type ? styles.inputError : null,
+            ]}
             value={certificateType}
             onChangeText={setCertificateType}
             placeholder="e.g. Sign Language Interpreter"
@@ -174,7 +222,10 @@ export default function CertificationUploadScreen() {
 
           <Text style={styles.label}>Issuing organisation</Text>
           <TextInput
-            style={[styles.input, errors.issuing_organisation ? styles.inputError : null]}
+            style={[
+              styles.input,
+              errors.issuing_organisation ? styles.inputError : null,
+            ]}
             value={organisation}
             onChangeText={setOrganisation}
             placeholder="e.g. UNAD"
@@ -198,7 +249,11 @@ export default function CertificationUploadScreen() {
             accessibilityRole="button"
             accessibilityState={{ busy: submitting, disabled: submitting }}
           >
-            {submitting ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>Submit for review</Text>}
+            {submitting ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.buttonText}>Submit for review</Text>
+            )}
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -222,10 +277,27 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
   content: { padding: 24, paddingBottom: 40 },
-  step: { color: colors.primary, fontSize: 13, fontWeight: "600", marginBottom: 6 },
+  step: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 6,
+  },
   title: { color: colors.heading, fontSize: 24, fontWeight: "700" },
-  subtitle: { color: colors.muted, fontSize: 14, lineHeight: 20, marginTop: 8, marginBottom: 12 },
-  label: { color: colors.heading, fontSize: 14, fontWeight: "600", marginTop: 16, marginBottom: 6 },
+  subtitle: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  label: {
+    color: colors.heading,
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 16,
+    marginBottom: 6,
+  },
   input: {
     height: 48,
     borderRadius: 10,
@@ -236,7 +308,10 @@ const styles = StyleSheet.create({
     color: colors.heading,
     fontSize: 15,
   },
-  inputError: { borderColor: colors.error, backgroundColor: colors.errorBackground },
+  inputError: {
+    borderColor: colors.error,
+    backgroundColor: colors.errorBackground,
+  },
   picker: {
     minHeight: 64,
     flexDirection: "row",
