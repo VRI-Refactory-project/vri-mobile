@@ -1,11 +1,5 @@
-// import SplashScreen from "../screens/SplashScreen";
-
-// export default function Index() {
-//   return <SplashScreen />;
-// }
-
-import RoleSelectionPage from "../screens/RoleSelectionPage";
+import SplashScreen from "../screens/SplashScreen";
 
 export default function Index() {
-  return <RoleSelectionPage />;
+  return <SplashScreen />;
 }
