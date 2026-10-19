@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AccessibilityInfo,
   Animated,
@@ -18,15 +18,15 @@ export const SPLASH_DURATION_MS = 2200;
 const logoIcon = require("../../assets/images/no_word.png");
 
 // ---- Easy knobs to tune ----
-const LOGO_SIZE = 110; // the round icon
-const NAME_SIZE = 24; // the "SignConnect" text under it
+const LOGO_SIZE = 120; // the round icon
+const NAME_SIZE = 20; // the "SignConnect" text under it
 
 // First screen of SignConnect: just the logo and name on a plain background,
 // then it moves on to the landing page by itself.
 export default function SplashScreen() {
   // Starts see-through and slightly small, then grows in (the "enter" animation).
-  const fade = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.96)).current;
+  const [fade] = useState(() => new Animated.Value(0));
+  const [scale] = useState(() => new Animated.Value(0.96));
 
   useEffect(() => {
     let cancelled = false;

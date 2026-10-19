@@ -83,6 +83,12 @@ function getStatusColor(status?: VerificationStatus) {
   return { backgroundColor: "#FFF2D7", color: "#946200" };
 }
 
+function getProfileErrorMessage(error: unknown): string {
+  return error instanceof ApiError
+    ? error.message
+    : "Unable to load your profile. Please try again.";
+}
+
 function SectionHeading({
   title,
   subtitle,
@@ -219,33 +225,53 @@ export default function InterpreterSettingsScreen() {
   const [language, setLanguage] = useState(LANGUAGES[0]);
   const [timeZone, setTimeZone] = useState(TIME_ZONES[0]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    getJson<InterpreterProfile>("/interpreters/me/")
+      .then((data) => {
+        if (isActive) {
+          setProfile(data);
+        }
+      })
+      .catch((error: unknown) => {
+        if (isActive) {
+          Alert.alert(
+            "Could not load settings",
+            getProfileErrorMessage(error),
+          );
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   async function loadProfile(isRefresh = false) {
+    if (isRefresh) {
+      setRefreshing(true);
+    }
+
     try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-
       const data = await getJson<InterpreterProfile>("/interpreters/me/");
-
       setProfile(data);
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? error.message
-          : "Unable to load your profile. Please try again.";
-
-      Alert.alert("Could not load settings", message);
+    } catch (error: unknown) {
+      Alert.alert(
+        "Could not load settings",
+        getProfileErrorMessage(error),
+      );
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (isRefresh) {
+        setRefreshing(false);
+      }
     }
   }
-
-  useEffect(() => {
-    void loadProfile();
-  }, []);
 
   function updateNotification(
     key: keyof NotificationPreferences,

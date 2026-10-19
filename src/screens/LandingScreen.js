@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AccessibilityInfo,
   Animated,
@@ -16,16 +16,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { requestSession, joinSessionByCode, ApiError } from "../services/api";
+// import { requestSession, joinSessionByCode, ApiError } from "../services/api";
 const logoIcon = require("../../assets/images/no_word.png");
 const heroPhoto = require("../../assets/images/interpreter5.jpg");
 const pipPhoto = require("../../assets/images/interpreter2.png");
 
-const LOGO_ICON_SIZE = 130 ;
+const LOGO_ICON_SIZE = 130;
 
 // Public entry point. Get Started and Sign Up lead to role selection.
 export default function LandingScreen() {
-  const bounce = useRef(new Animated.Value(0)).current;
+  const [bounce] = useState(() => new Animated.Value(0));
 
   // Animate the Get Started button unless reduced motion is enabled.
   useEffect(() => {
@@ -110,7 +110,6 @@ export default function LandingScreen() {
               />
 
               {/* FIX: Use text instead of the undefined logoWord image */}
-             
             </View>
 
             <View style={styles.nav}>
