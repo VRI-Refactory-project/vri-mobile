@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SplashScreen from "./src/screens/SplashScreen";
 import LandingScreen from "./src/screens/LandingScreen";
 import RoleSelectionPage from "./src/screens/RoleSelectionPage";
-import { InterpreterSettingsPage } from "./src/screens/InterpreterSettingsPage";
+import  InterpreterSettingsPage  from "./src/pages/interpreter/InterpreterSettingsPage";
 
 const Stack = createNativeStackNavigator();
 
