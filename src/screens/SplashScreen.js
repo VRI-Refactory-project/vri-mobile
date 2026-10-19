@@ -1,64 +1,107 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  AccessibilityInfo,
+  Animated,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
   Text,
   View,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { styles } from "./SplashScreen.styles";
 
+// How long the splash stays up before moving on to the landing page.
+export const SPLASH_DURATION_MS = 2200;
+
+// The same round icon the landing page uses.
+const logoIcon = require("../../assets/images/no_word.png");
+
+// ---- Easy knobs to tune ----
+const LOGO_SIZE = 120; // the round icon
+const NAME_SIZE = 20; // the "SignConnect" text under it
+
+// First screen of SignConnect: just the logo and name on a plain background,
+// then it moves on to the landing page by itself.
 export default function SplashScreen() {
-  // CHANGED: removed { navigation }
-  const handleContinue = () => {
-    router.replace("/landing"); // CHANGED: was navigation.replace("Landing")
-  };
+  // Starts see-through and slightly small, then grows in (the "enter" animation).
+  const [fade] = useState(() => new Animated.Value(0));
+  const [scale] = useState(() => new Animated.Value(0.96));
 
-  const handleLogin = () => {
-    router.push("/login");
-  };
+  useEffect(() => {
+    let cancelled = false;
+
+    // Skip the animation for people who turned on "reduce motion" on their phone.
+    AccessibilityInfo.isReduceMotionEnabled().then((reduceMotion) => {
+      if (cancelled) return;
+      if (reduceMotion) {
+        fade.setValue(1);
+        scale.setValue(1);
+        return;
+      }
+      Animated.parallel([
+        Animated.timing(fade, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+
+    const timer = setTimeout(() => {
+      router.replace("/landing");
+    }, SPLASH_DURATION_MS);
+
+    // Clean up if the screen is closed early, so it never navigates afterwards.
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [fade, scale]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#3f327f" />
 
-      <View style={styles.content}>
+      <Animated.View
+        style={[styles.logo, { opacity: fade, transform: [{ scale }] }]}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel="SignConnect"
+      >
         <Image
-          source={require("../../assets/images/logo.png")}
-          style={styles.logo}
+          source={logoIcon}
+          style={{ width: LOGO_SIZE, height: LOGO_SIZE }}
           resizeMode="contain"
         />
-
-        <Text style={styles.tagline}>
-          Inclusive{"\n"}Communication.{"\n"}Anytime. Anywhere.
-        </Text>
-
-        <Text style={styles.description}>
-          Connect instantly with certified sign-language interpreters
-        </Text>
-
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleContinue}
-          accessibilityRole="button"
-          accessibilityLabel="Continue to create an account"
-        >
-          <Text style={styles.continueText}>Continue</Text>
-          <Feather name="chevron-right" size={20} color="#3B2978" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Already have an account?{"  "}
-          <Text style={styles.loginLink} onPress={handleLogin}>
-            Log in
-          </Text>
-        </Text>
-      </View>
-    </SafeAreaView>
+        <Text style={styles.name}>SignConnect</Text>
+      </Animated.View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    backgroundColor: "#3f327f",
+  },
+  logo: {
+    alignItems: "center",
+    gap: 16,
+  },
+  name: {
+    color: "#FFFFFF",
+    fontFamily: Platform.select({ ios: "Georgia", default: "serif" }),
+    fontWeight: "700",
+    fontSize: NAME_SIZE,
+    letterSpacing: 0.5,
+  },
+});
