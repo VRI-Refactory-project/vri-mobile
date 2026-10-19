@@ -14,17 +14,17 @@ import { styles } from "./LandingScreen.styles";
 
 export default function LandingScreen() {
   // These only print a message for now. We'll connect them to screens later.
-const handleLogin = () => {
-  router.push("/login");
-};
+  const handleLogin = () => {
+    router.push("/login");
+  };
 
-const handleSignUp = () => {
-  router.push("/signup");
-};
+  const handleSignUp = () => {
+    router.push("/signup");
+  };
 
-const handleGetStarted = () => {
-  router.push("/signup");
-};
+  const handleGetStarted = () => {
+    router.push("/signup");
+  };
 
   return (
     <SafeAreaView style={styles.container}>

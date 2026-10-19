@@ -1,5 +1,3 @@
-
-
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -9,7 +7,7 @@ export const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)", 
+    backgroundColor: "rgba(0,0,0,0.35)",
   },
 
   header: {
@@ -27,22 +25,22 @@ export const styles = StyleSheet.create({
   },
 
   backButton: {
-  flexDirection: "row",
-  alignItems: "center",
-  paddingVertical: 10,
-  paddingHorizontal: 16,
-  borderRadius: 999,                         // pill shape
-  backgroundColor: "rgba(255,255,255,0.15)", // light translucent fill
-  borderWidth: 1,
-  borderColor: "rgba(255,255,255,0.35)",     // thin white ring
-  gap: 6,
-},
-backText: {
-  fontSize: 15,
-  color: "#FFFFFF",
-  fontWeight: "500",
-  marginLeft: 2,
-},
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 999, // pill shape
+    backgroundColor: "rgba(255,255,255,0.15)", // light translucent fill
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.35)", // thin white ring
+    gap: 6,
+  },
+  backText: {
+    fontSize: 15,
+    color: "#FFFFFF",
+    fontWeight: "500",
+    marginLeft: 2,
+  },
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 20,
@@ -107,7 +105,7 @@ backText: {
   },
   cardSubtitle: {
     fontSize: 14,
-    color: "#000000",     // was "#0000" which is transparent — you probably want readable text
+    color: "#000000", // was "#0000" which is transparent — you probably want readable text
     lineHeight: 20,
   },
   bottomBar: {
@@ -133,4 +131,3 @@ backText: {
     fontWeight: "bold",
   },
 });
-

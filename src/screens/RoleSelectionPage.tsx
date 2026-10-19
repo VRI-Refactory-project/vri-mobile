@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Text,
@@ -39,13 +38,13 @@ export default function RoleSelectionPage() {
             resizeMode="contain"
           />
           <TouchableOpacity
-  style={styles.backButton}
-  onPress={handleBack}
-  activeOpacity={0.8}
->
-  <Feather name="chevron-left" size={20} color="#FFFFFF" />
-  <Text style={styles.backText}>Back</Text>
-</TouchableOpacity>
+            style={styles.backButton}
+            onPress={handleBack}
+            activeOpacity={0.8}
+          >
+            <Feather name="chevron-left" size={20} color="#FFFFFF" />
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -121,4 +120,3 @@ export default function RoleSelectionPage() {
     </ImageBackground>
   );
 }
-

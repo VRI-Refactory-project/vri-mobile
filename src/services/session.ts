@@ -33,7 +33,11 @@ async function deleteItem(key: string) {
   await SecureStore.deleteItemAsync(key);
 }
 
-export async function startSession(access: string, refresh: string, user: AuthUser) {
+export async function startSession(
+  access: string,
+  refresh: string,
+  user: AuthUser,
+) {
   await setItem(ACCESS_KEY, access);
   await setItem(REFRESH_KEY, refresh);
   currentUser = user;

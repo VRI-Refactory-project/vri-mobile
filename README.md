@@ -12,12 +12,12 @@ npm start              # scan the QR code with Expo Go, or press a / i / w
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `npm start` | Start the Expo dev server |
+| Command                           | What it does                 |
+| --------------------------------- | ---------------------------- |
+| `npm start`                       | Start the Expo dev server    |
 | `npm run android` / `ios` / `web` | Start and open on a platform |
-| `npm run lint` | ESLint (eslint-config-expo) |
-| `npm run typecheck` | TypeScript check |
+| `npm run lint`                    | ESLint (eslint-config-expo)  |
+| `npm run typecheck`               | TypeScript check             |
 
 Add packages with `npx expo install <pkg>` (not `npm install`) so versions match the Expo SDK.
 

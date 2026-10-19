@@ -137,9 +137,6 @@
 //   },
 // });
 
-
-
-
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -304,7 +301,3 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
-
-
-

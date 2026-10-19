@@ -14,7 +14,9 @@ export default function PasswordRecoveryRoute() {
       onSendResetLink={() => Alert.alert("Sending reset link to " + email)}
       onResetComplete={() => Alert.alert("Reset complete")}
       // Opened directly (e.g. a web URL) there is no screen to go back to, so fall back to login.
-      onBack={() => (router.canGoBack() ? router.back() : router.replace("/login"))}
+      onBack={() =>
+        router.canGoBack() ? router.back() : router.replace("/login")
+      }
       onGoToLogin={() => router.dismissTo("/login")}
     />
   );

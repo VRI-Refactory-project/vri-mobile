@@ -1,4 +1,3 @@
-
 // import type { ComponentType } from "react";
 
 // export type PasswordRecoveryScreenProps = {
@@ -12,12 +11,7 @@
 // declare const PasswordRecoveryScreen: ComponentType<PasswordRecoveryScreenProps>;
 
 // export default PasswordRecoveryScreen;
-// // 
-
-
-
-
-
+// //
 
 import type { ComponentType } from "react";
 

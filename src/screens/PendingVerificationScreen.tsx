@@ -1,12 +1,22 @@
 // V2-003 step 3: shows where the interpreter's certification review stands.
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ApiError } from "../services/api";
-import { getInterpreterProfile, type InterpreterProfile } from "../services/interpreter";
+import {
+  getInterpreterProfile,
+  type InterpreterProfile,
+} from "../services/interpreter";
 import { needsEmailVerification } from "../services/auth";
 import { endSession, getCurrentUser } from "../services/session";
 
@@ -37,7 +47,11 @@ export default function PendingVerificationScreen() {
           router.replace("/login");
           return;
         }
-        setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
+        setError(
+          e instanceof ApiError
+            ? e.message
+            : "Something went wrong. Please try again.",
+        );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -64,7 +78,8 @@ export default function PendingVerificationScreen() {
 
   const status = profile?.verification_status;
   const certifications = profile?.certifications ?? [];
-  const latestReason = certifications.find((c) => c.rejection_reason)?.rejection_reason ?? "";
+  const latestReason =
+    certifications.find((c) => c.rejection_reason)?.rejection_reason ?? "";
 
   let icon: React.ComponentProps<typeof Feather>["name"] = "clock";
   let heading = "Your certification is under review";
@@ -77,11 +92,14 @@ export default function PendingVerificationScreen() {
   } else if (status === "REJECTED") {
     icon = "alert-circle";
     heading = "Your certification was not approved";
-    body = latestReason ? `Reason: ${latestReason}` : "Please upload a clear copy of a valid certificate.";
+    body = latestReason
+      ? `Reason: ${latestReason}`
+      : "Please upload a clear copy of a valid certificate.";
   } else if (status === "INACTIVE" && certifications.length === 0) {
     icon = "upload";
     heading = "Upload your certification";
-    body = "Your account is inactive until you submit a certificate for review.";
+    body =
+      "Your account is inactive until you submit a certificate for review.";
   }
 
   return (
@@ -94,7 +112,11 @@ export default function PendingVerificationScreen() {
             <Text style={styles.error} accessibilityRole="alert">
               {error}
             </Text>
-            <Pressable style={styles.button} onPress={load} accessibilityRole="button">
+            <Pressable
+              style={styles.button}
+              onPress={load}
+              accessibilityRole="button"
+            >
               <Text style={styles.buttonText}>Try again</Text>
             </Pressable>
           </View>
@@ -119,7 +141,8 @@ export default function PendingVerificationScreen() {
                         {c.certificate_type || c.document_name}
                       </Text>
                       <Text style={styles.rowMeta} numberOfLines={1}>
-                        {c.issuing_organisation} · {new Date(c.uploaded_at).toLocaleDateString()}
+                        {c.issuing_organisation} ·{" "}
+                        {new Date(c.uploaded_at).toLocaleDateString()}
                       </Text>
                     </View>
                   </View>
@@ -128,25 +151,44 @@ export default function PendingVerificationScreen() {
             ) : null}
 
             {status === "APPROVED" ? (
-              <Pressable style={styles.button} onPress={() => router.replace("/interpreter-dashboard")} accessibilityRole="button">
+              <Pressable
+                style={styles.button}
+                onPress={() => router.replace("/interpreter-dashboard")}
+                accessibilityRole="button"
+              >
                 <Text style={styles.buttonText}>Go to dashboard</Text>
               </Pressable>
             ) : (
               <>
                 {status === "REJECTED" || certifications.length === 0 ? (
-                  <Pressable style={styles.button} onPress={() => router.push("/certifications")} accessibilityRole="button">
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => router.push("/certifications")}
+                    accessibilityRole="button"
+                  >
                     <Text style={styles.buttonText}>Upload a certificate</Text>
                   </Pressable>
                 ) : null}
-                <Pressable style={styles.secondary} onPress={load} disabled={loading} accessibilityRole="button">
-                  <Text style={styles.secondaryText}>{loading ? "Checking…" : "Check status"}</Text>
+                <Pressable
+                  style={styles.secondary}
+                  onPress={load}
+                  disabled={loading}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.secondaryText}>
+                    {loading ? "Checking…" : "Check status"}
+                  </Text>
                 </Pressable>
               </>
             )}
           </>
         )}
 
-        <Pressable style={styles.signOut} onPress={handleSignOut} accessibilityRole="button">
+        <Pressable
+          style={styles.signOut}
+          onPress={handleSignOut}
+          accessibilityRole="button"
+        >
           <Text style={styles.secondaryText}>Sign out</Text>
         </Pressable>
       </ScrollView>
@@ -167,7 +209,12 @@ const colors = {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   content: { padding: 24, paddingBottom: 40 },
-  step: { color: colors.primary, fontSize: 13, fontWeight: "600", marginBottom: 16 },
+  step: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 16,
+  },
   loader: { marginTop: 48 },
   card: {
     alignItems: "center",
@@ -177,11 +224,33 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: 24,
   },
-  title: { color: colors.heading, fontSize: 20, fontWeight: "700", textAlign: "center", marginTop: 14 },
-  body: { color: colors.muted, fontSize: 14, lineHeight: 20, textAlign: "center", marginTop: 8 },
-  error: { color: colors.error, fontSize: 14, textAlign: "center", marginBottom: 16 },
+  title: {
+    color: colors.heading,
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 14,
+  },
+  body: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+    marginTop: 8,
+  },
+  error: {
+    color: colors.error,
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 16,
+  },
   list: { marginTop: 24 },
-  listTitle: { color: colors.heading, fontSize: 14, fontWeight: "600", marginBottom: 8 },
+  listTitle: {
+    color: colors.heading,
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -205,7 +274,17 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   buttonText: { color: colors.white, fontSize: 16, fontWeight: "600" },
-  secondary: { height: 44, alignItems: "center", justifyContent: "center", marginTop: 8 },
+  secondary: {
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 8,
+  },
   secondaryText: { color: colors.primary, fontSize: 15, fontWeight: "600" },
-  signOut: { height: 44, alignItems: "center", justifyContent: "center", marginTop: 24 },
+  signOut: {
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+  },
 });

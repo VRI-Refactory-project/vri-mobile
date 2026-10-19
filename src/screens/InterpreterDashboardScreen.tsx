@@ -1,14 +1,25 @@
 // Interpreter dashboard: status, requests, schedule and sessions.
 // Only an approved interpreter with a verified email gets here; everyone else is sent to the right earlier step.
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ApiError } from "../services/api";
 import { needsEmailVerification } from "../services/auth";
-import { getInterpreterProfile, type InterpreterProfile } from "../services/interpreter";
+import {
+  getInterpreterProfile,
+  type InterpreterProfile,
+} from "../services/interpreter";
 import { endSession, getCurrentUser } from "../services/session";
 import { ui } from "../theme/ui";
 
@@ -29,7 +40,11 @@ type SectionProps = {
 // When they exist, replace `empty` with the list for that section.
 function Section({ icon, title, empty }: SectionProps) {
   return (
-    <View style={styles.card} accessible accessibilityLabel={`${title}. ${empty}`}>
+    <View
+      style={styles.card}
+      accessible
+      accessibilityLabel={`${title}. ${empty}`}
+    >
       <View style={styles.cardHeader}>
         <Feather name={icon} size={18} color={ui.primary} />
         <Text style={styles.cardTitle}>{title}</Text>
@@ -68,7 +83,11 @@ export default function InterpreterDashboardScreen() {
           router.replace("/login");
           return;
         }
-        setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
+        setError(
+          e instanceof ApiError
+            ? e.message
+            : "Something went wrong. Please try again.",
+        );
       })
       .finally(() => {
         if (!active) return;
@@ -89,7 +108,8 @@ export default function InterpreterDashboardScreen() {
   if (user.role !== "interpreter") return <Redirect href="/home" />;
   if (!verified) return <Redirect href="/verify-email" />;
   // Not approved (waiting, rejected or deactivated): the dashboard stays closed.
-  if (profile && profile.verification_status !== "APPROVED") return <Redirect href="/pending" />;
+  if (profile && profile.verification_status !== "APPROVED")
+    return <Redirect href="/pending" />;
 
   const handleSignOut = async () => {
     await endSession();
@@ -104,7 +124,10 @@ export default function InterpreterDashboardScreen() {
       <SafeAreaView style={styles.screen}>
         <View style={styles.centered}>
           {loading ? (
-            <ActivityIndicator color={ui.primary} accessibilityLabel="Checking your account" />
+            <ActivityIndicator
+              color={ui.primary}
+              accessibilityLabel="Checking your account"
+            />
           ) : (
             <>
               <Text style={styles.error} accessibilityRole="alert">
@@ -120,7 +143,11 @@ export default function InterpreterDashboardScreen() {
               >
                 <Text style={styles.buttonText}>Try again</Text>
               </Pressable>
-              <Pressable style={styles.link} onPress={handleSignOut} accessibilityRole="button">
+              <Pressable
+                style={styles.link}
+                onPress={handleSignOut}
+                accessibilityRole="button"
+              >
                 <Text style={styles.linkText}>Sign out</Text>
               </Pressable>
             </>
@@ -150,9 +177,15 @@ export default function InterpreterDashboardScreen() {
             <Text style={styles.title} accessibilityRole="header">
               {[greeting(), firstName].filter(Boolean).join(" ")}
             </Text>
-            <Text style={styles.subtitle}>Here&apos;s what&apos;s happening today!</Text>
+            <Text style={styles.subtitle}>
+              Here&apos;s what&apos;s happening today!
+            </Text>
           </View>
-          <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <View
+            style={styles.badge}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
             <Text style={styles.badgeText}>{initial}</Text>
           </View>
         </View>
@@ -166,9 +199,16 @@ export default function InterpreterDashboardScreen() {
         {/* Status. The availability on/off switch (V2-021) belongs in this card; for now it only shows the state. */}
         <View style={styles.card} accessible accessibilityRole="summary">
           <View style={styles.statusRow}>
-            <View style={[styles.dot, profile.is_available ? styles.dotOn : null]} />
+            <View
+              style={[styles.dot, profile.is_available ? styles.dotOn : null]}
+            />
             <View style={styles.statusText}>
-              <Text style={[styles.statusTitle, profile.is_available ? styles.statusTitleOn : null]}>
+              <Text
+                style={[
+                  styles.statusTitle,
+                  profile.is_available ? styles.statusTitleOn : null,
+                ]}
+              >
                 {profile.is_available ? "Available" : "Unavailable"}
               </Text>
               <Text style={styles.cardEmpty}>
@@ -184,11 +224,23 @@ export default function InterpreterDashboardScreen() {
           </View>
         </View>
 
-        <Section icon="inbox" title="Requests" empty="No requests waiting for an interpreter." />
-        <Section icon="calendar" title="Schedule" empty="Nothing scheduled yet." />
+        <Section
+          icon="inbox"
+          title="Requests"
+          empty="No requests waiting for an interpreter."
+        />
+        <Section
+          icon="calendar"
+          title="Schedule"
+          empty="Nothing scheduled yet."
+        />
         <Section icon="video" title="Sessions" empty="No sessions yet." />
 
-        <Pressable style={styles.link} onPress={handleSignOut} accessibilityRole="button">
+        <Pressable
+          style={styles.link}
+          onPress={handleSignOut}
+          accessibilityRole="button"
+        >
           <Text style={styles.linkText}>Sign out</Text>
         </Pressable>
       </ScrollView>
@@ -198,7 +250,12 @@ export default function InterpreterDashboardScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: ui.background },
-  centered: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
   content: { padding: 24, paddingBottom: 40 },
   header: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
   headerText: { flex: 1 },
@@ -221,18 +278,44 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
   },
-  cardHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 6,
+  },
   cardTitle: { color: ui.heading, fontSize: 16, fontWeight: "600" },
   cardEmpty: { color: ui.muted, fontSize: 14, lineHeight: 20 },
   statusRow: { flexDirection: "row", alignItems: "center" },
-  dot: { width: 12, height: 12, borderRadius: 6, backgroundColor: ui.placeholder, marginRight: 12 },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: ui.placeholder,
+    marginRight: 12,
+  },
   dotOn: { backgroundColor: ui.success },
   statusText: { flex: 1 },
-  statusTitle: { color: ui.heading, fontSize: 18, fontWeight: "700", marginBottom: 2 },
+  statusTitle: {
+    color: ui.heading,
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 2,
+  },
   statusTitleOn: { color: ui.success },
-  approved: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 12 },
+  approved: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 12,
+  },
   approvedText: { color: ui.success, fontSize: 13, fontWeight: "600" },
-  error: { color: ui.error, fontSize: 14, textAlign: "center", marginBottom: 12 },
+  error: {
+    color: ui.error,
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 12,
+  },
   button: {
     height: 50,
     borderRadius: 10,
@@ -243,6 +326,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   buttonText: { color: ui.white, fontSize: 16, fontWeight: "600" },
-  link: { height: 44, alignItems: "center", justifyContent: "center", marginTop: 12 },
+  link: {
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 12,
+  },
   linkText: { color: ui.primary, fontSize: 15, fontWeight: "600" },
 });

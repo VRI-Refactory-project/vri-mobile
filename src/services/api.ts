@@ -12,7 +12,11 @@ export class ApiError extends Error {
   /** First message per field, e.g. { identifier: "This field is required." } */
   fieldErrors: Record<string, string>;
 
-  constructor(message: string, status: number, fieldErrors: Record<string, string> = {}) {
+  constructor(
+    message: string,
+    status: number,
+    fieldErrors: Record<string, string> = {},
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -29,9 +33,15 @@ type RequestOptions = {
   timeoutMs?: number;
 };
 
-async function request<T>(path: string, { method, body, auth, timeoutMs = TIMEOUT_MS }: RequestOptions): Promise<T> {
+async function request<T>(
+  path: string,
+  { method, body, auth, timeoutMs = TIMEOUT_MS }: RequestOptions,
+): Promise<T> {
   if (!API_URL) {
-    throw new ApiError("The app has no server address. Set EXPO_PUBLIC_API_URL in .env.", 0);
+    throw new ApiError(
+      "The app has no server address. Set EXPO_PUBLIC_API_URL in .env.",
+      0,
+    );
   }
 
   const headers: Record<string, string> = { Accept: "application/json" };
@@ -54,9 +64,17 @@ async function request<T>(path: string, { method, body, auth, timeoutMs = TIMEOU
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   let response: Response;
   try {
-    response = await fetch(`${API_URL}${path}`, { method, headers, body: payload, signal: controller.signal });
+    response = await fetch(`${API_URL}${path}`, {
+      method,
+      headers,
+      body: payload,
+      signal: controller.signal,
+    });
   } catch {
-    throw new ApiError("We couldn't reach the server. Check your connection and try again.", 0);
+    throw new ApiError(
+      "We couldn't reach the server. Check your connection and try again.",
+      0,
+    );
   } finally {
     clearTimeout(timer);
   }
@@ -84,28 +102,49 @@ export function getJson<T>(path: string): Promise<T> {
 
 /** Signed-in multipart upload (e.g. a certification document). */
 export function postForm<T>(path: string, form: FormData): Promise<T> {
-  return request<T>(path, { method: "POST", body: form, auth: true, timeoutMs: UPLOAD_TIMEOUT_MS });
+  return request<T>(path, {
+    method: "POST",
+    body: form,
+    auth: true,
+    timeoutMs: UPLOAD_TIMEOUT_MS,
+  });
 }
 
 // DRF errors look like {"detail": "..."}, {"non_field_errors": ["..."]} or {"field": ["..."]}.
 function toApiError(status: number, data: unknown): ApiError {
   if (status === 429) {
-    return new ApiError("Too many attempts. Please wait a minute and try again.", status);
+    return new ApiError(
+      "Too many attempts. Please wait a minute and try again.",
+      status,
+    );
   }
   if (status === 401) {
-    return new ApiError("Your session has expired. Please sign in again.", status);
+    return new ApiError(
+      "Your session has expired. Please sign in again.",
+      status,
+    );
   }
   if (status === 413) {
-    return new ApiError("That file is too large. Choose a smaller file.", status);
+    return new ApiError(
+      "That file is too large. Choose a smaller file.",
+      status,
+    );
   }
   if (status >= 500 || !data || typeof data !== "object") {
-    return new ApiError("Something went wrong on our side. Please try again.", status);
+    return new ApiError(
+      "Something went wrong on our side. Please try again.",
+      status,
+    );
   }
 
   let message = "";
   const fieldErrors: Record<string, string> = {};
   for (const [key, value] of Object.entries(data)) {
-    const text = Array.isArray(value) ? String(value[0] ?? "") : typeof value === "string" ? value : "";
+    const text = Array.isArray(value)
+      ? String(value[0] ?? "")
+      : typeof value === "string"
+        ? value
+        : "";
     if (!text) continue;
     if (key === "detail" || key === "non_field_errors") {
       message = message || text;
@@ -113,5 +152,9 @@ function toApiError(status: number, data: unknown): ApiError {
       fieldErrors[key] = text;
     }
   }
-  return new ApiError(message || "Please check your details and try again.", status, fieldErrors);
+  return new ApiError(
+    message || "Please check your details and try again.",
+    status,
+    fieldErrors,
+  );
 }

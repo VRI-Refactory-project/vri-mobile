@@ -1,11 +1,25 @@
 // Phone number with a country picker: flag and calling code on the left, the number on the right.
 // Reports the international number (e.g. +256772123456) through onChange, or "" while empty.
 import React, { useMemo, useState } from "react";
-import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { COUNTRIES, DEFAULT_COUNTRY, findCountry, flagEmoji, type Country } from "../lib/countries";
+import {
+  COUNTRIES,
+  DEFAULT_COUNTRY,
+  findCountry,
+  flagEmoji,
+  type Country,
+} from "../lib/countries";
 import { ui } from "../theme/ui";
 
 type Props = {
@@ -19,7 +33,8 @@ type Props = {
 function nationalDigits(text: string, dial: string): string {
   let digits = text.replace(/\D/g, "");
   // Someone pasting +256 772 123 456 gets the country code removed, since the picker already shows it.
-  if (text.trim().startsWith("+") && digits.startsWith(dial)) digits = digits.slice(dial.length);
+  if (text.trim().startsWith("+") && digits.startsWith(dial))
+    digits = digits.slice(dial.length);
   return digits.replace(/^0+/, "");
 }
 
@@ -40,7 +55,10 @@ export function PhoneField({ onChange, onBlur, invalid, disabled }: Props) {
     const q = query.trim().toLowerCase().replace(/^\+/, "");
     if (!q) return COUNTRIES;
     return COUNTRIES.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.dial.startsWith(q) || c.iso.toLowerCase() === q,
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.dial.startsWith(q) ||
+        c.iso.toLowerCase() === q,
     );
   }, [query]);
 
@@ -84,7 +102,11 @@ export function PhoneField({ onChange, onBlur, invalid, disabled }: Props) {
         />
       </View>
 
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal
+        visible={open}
+        animationType="slide"
+        onRequestClose={() => setOpen(false)}
+      >
         <SafeAreaView style={styles.modal}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle} accessibilityRole="header">
@@ -128,10 +150,19 @@ export function PhoneField({ onChange, onBlur, invalid, disabled }: Props) {
                   {item.name}
                 </Text>
                 <Text style={styles.itemDial}>+{item.dial}</Text>
-                {item.iso === iso ? <Feather name="check" size={18} color={ui.primary} style={styles.tick} /> : null}
+                {item.iso === iso ? (
+                  <Feather
+                    name="check"
+                    size={18}
+                    color={ui.primary}
+                    style={styles.tick}
+                  />
+                ) : null}
               </Pressable>
             )}
-            ListEmptyComponent={<Text style={styles.empty}>No country matches that.</Text>}
+            ListEmptyComponent={
+              <Text style={styles.empty}>No country matches that.</Text>
+            }
           />
         </SafeAreaView>
       </Modal>
@@ -161,7 +192,13 @@ const styles = StyleSheet.create({
   },
   flag: { fontSize: 20 },
   dial: { color: ui.heading, fontSize: 15, fontWeight: "600" },
-  input: { flex: 1, height: "100%", paddingHorizontal: 12, color: ui.heading, fontSize: 15 },
+  input: {
+    flex: 1,
+    height: "100%",
+    paddingHorizontal: 12,
+    color: ui.heading,
+    fontSize: 15,
+  },
   modal: { flex: 1, backgroundColor: ui.background },
   modalHeader: {
     flexDirection: "row",

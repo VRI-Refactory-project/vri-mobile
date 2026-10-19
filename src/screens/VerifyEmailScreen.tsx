@@ -14,7 +14,11 @@ import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ApiError } from "../services/api";
-import { confirmEmailCode, needsEmailVerification, resendEmailCode } from "../services/auth";
+import {
+  confirmEmailCode,
+  needsEmailVerification,
+  resendEmailCode,
+} from "../services/auth";
 import { endSession, getCurrentUser } from "../services/session";
 import { form, ui } from "../theme/ui";
 
@@ -37,7 +41,11 @@ export default function VerifyEmailScreen() {
   const user = getCurrentUser();
   if (!user) return <Redirect href="/login" />;
   if (!needsEmailVerification(user)) {
-    return <Redirect href={user.role === "interpreter" ? "/interpreter-dashboard" : "/home"} />;
+    return (
+      <Redirect
+        href={user.role === "interpreter" ? "/interpreter-dashboard" : "/home"}
+      />
+    );
   }
 
   const announce = (message: string) => {
@@ -56,7 +64,9 @@ export default function VerifyEmailScreen() {
     try {
       await confirmEmailCode(code);
       // Interpreters now wait for the admin review (or go straight in if already approved).
-      router.replace(user.role === "interpreter" ? "/interpreter-dashboard" : "/home");
+      router.replace(
+        user.role === "interpreter" ? "/interpreter-dashboard" : "/home",
+      );
     } catch (e) {
       setSubmitting(false);
       if (e instanceof ApiError && e.status === 401) {
@@ -64,7 +74,11 @@ export default function VerifyEmailScreen() {
         router.replace("/login");
         return;
       }
-      announce(e instanceof ApiError ? (e.fieldErrors.code ?? e.message) : "Something went wrong. Please try again.");
+      announce(
+        e instanceof ApiError
+          ? (e.fieldErrors.code ?? e.message)
+          : "Something went wrong. Please try again.",
+      );
     }
   };
 
@@ -78,7 +92,11 @@ export default function VerifyEmailScreen() {
       setNotice("We sent a new code. Check your inbox and spam folder.");
       setCooldown(RESEND_SECONDS);
     } catch (e) {
-      announce(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
+      announce(
+        e instanceof ApiError
+          ? e.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setResending(false);
     }
@@ -91,8 +109,14 @@ export default function VerifyEmailScreen() {
 
   return (
     <SafeAreaView style={form.screen}>
-      <KeyboardAvoidingView style={form.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={form.content} keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView
+        style={form.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={form.content}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={form.title} accessibilityRole="header">
             Confirm your email
           </Text>
@@ -102,7 +126,11 @@ export default function VerifyEmailScreen() {
 
           <Text style={form.label}>Verification code</Text>
           <TextInput
-            style={[form.input, { letterSpacing: 6, fontSize: 20, textAlign: "center" }, error ? form.inputError : null]}
+            style={[
+              form.input,
+              { letterSpacing: 6, fontSize: 20, textAlign: "center" },
+              error ? form.inputError : null,
+            ]}
             value={code}
             onChangeText={(text) => {
               setCode(text.replace(/\D/g, "").slice(0, 6));
@@ -125,7 +153,11 @@ export default function VerifyEmailScreen() {
               {error}
             </Text>
           ) : null}
-          {notice ? <Text style={{ color: ui.success, fontSize: 14, marginTop: 16 }}>{notice}</Text> : null}
+          {notice ? (
+            <Text style={{ color: ui.success, fontSize: 14, marginTop: 16 }}>
+              {notice}
+            </Text>
+          ) : null}
 
           <Pressable
             style={[form.button, submitting ? form.buttonDisabled : null]}
@@ -134,19 +166,34 @@ export default function VerifyEmailScreen() {
             accessibilityRole="button"
             accessibilityState={{ busy: submitting, disabled: submitting }}
           >
-            {submitting ? <ActivityIndicator color={ui.white} /> : <Text style={form.buttonText}>Confirm email</Text>}
+            {submitting ? (
+              <ActivityIndicator color={ui.white} />
+            ) : (
+              <Text style={form.buttonText}>Confirm email</Text>
+            )}
           </Pressable>
 
           <Pressable
-            style={[form.link, cooldown > 0 || resending ? form.buttonDisabled : null]}
+            style={[
+              form.link,
+              cooldown > 0 || resending ? form.buttonDisabled : null,
+            ]}
             onPress={handleResend}
             disabled={cooldown > 0 || resending}
             accessibilityRole="button"
           >
-            <Text style={form.linkText}>{cooldown > 0 ? `Send a new code in ${cooldown}s` : "Send a new code"}</Text>
+            <Text style={form.linkText}>
+              {cooldown > 0
+                ? `Send a new code in ${cooldown}s`
+                : "Send a new code"}
+            </Text>
           </Pressable>
 
-          <Pressable style={form.link} onPress={handleSignOut} accessibilityRole="button">
+          <Pressable
+            style={form.link}
+            onPress={handleSignOut}
+            accessibilityRole="button"
+          >
             <Text style={form.linkText}>Sign out</Text>
           </Pressable>
         </ScrollView>

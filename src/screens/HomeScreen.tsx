@@ -24,7 +24,11 @@ export default function HomeScreen() {
           Welcome, {user.full_name}
         </Text>
         <Text style={styles.subtitle}>You are signed in as {user.role}.</Text>
-        <Pressable style={styles.button} onPress={handleSignOut} accessibilityRole="button">
+        <Pressable
+          style={styles.button}
+          onPress={handleSignOut}
+          accessibilityRole="button"
+        >
           <Text style={styles.buttonText}>Sign out</Text>
         </Pressable>
       </View>

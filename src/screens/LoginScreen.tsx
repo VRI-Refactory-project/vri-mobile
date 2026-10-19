@@ -83,7 +83,8 @@ export default function LoginScreen() {
     } catch (error) {
       setSubmitting(false);
       if (error instanceof ApiError) {
-        const { identifier: identifierError, password: passwordError } = error.fieldErrors;
+        const { identifier: identifierError, password: passwordError } =
+          error.fieldErrors;
         if (identifierError || passwordError) {
           setErrors({ identifier: identifierError, password: passwordError });
         } else {
@@ -139,7 +140,10 @@ export default function LoginScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + 16 },
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -147,7 +151,9 @@ export default function LoginScreen() {
             <Text style={styles.title} accessibilityRole="header">
               Welcome Back
             </Text>
-            <Text style={styles.subtitle}>Sign in to continue to SignConnect.</Text>
+            <Text style={styles.subtitle}>
+              Sign in to continue to SignConnect.
+            </Text>
 
             {formError ? (
               <Text style={styles.formError} accessibilityLiveRegion="polite">
@@ -156,15 +162,16 @@ export default function LoginScreen() {
             ) : null}
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>
-                Email or phone number
-              </Text>
+              <Text style={styles.label}>Email or phone number</Text>
               <TextInput
                 style={[styles.input, errors.identifier && styles.inputError]}
                 value={identifier}
                 onChangeText={(value) => {
                   setIdentifier(value);
-                  setErrors((previous) => ({ ...previous, identifier: undefined }));
+                  setErrors((previous) => ({
+                    ...previous,
+                    identifier: undefined,
+                  }));
                 }}
                 placeholder="name@example.com or +256 772 123 456"
                 placeholderTextColor={colors.placeholder}
@@ -182,16 +189,17 @@ export default function LoginScreen() {
             </View>
 
             <View style={[styles.fieldGroup, styles.lastFieldGroup]}>
-              <Text style={styles.label}>
-                Password
-              </Text>
+              <Text style={styles.label}>Password</Text>
               <TextInput
                 ref={passwordRef}
                 style={[styles.input, errors.password && styles.inputError]}
                 value={password}
                 onChangeText={(value) => {
                   setPassword(value);
-                  setErrors((previous) => ({ ...previous, password: undefined }));
+                  setErrors((previous) => ({
+                    ...previous,
+                    password: undefined,
+                  }));
                 }}
                 placeholder="Enter your password"
                 placeholderTextColor={colors.placeholder}
@@ -221,7 +229,11 @@ export default function LoginScreen() {
               ) : (
                 <>
                   <Text style={styles.loginText}>Login</Text>
-                  <Feather name="chevron-right" size={18} color={colors.white} />
+                  <Feather
+                    name="chevron-right"
+                    size={18}
+                    color={colors.white}
+                  />
                 </>
               )}
             </Pressable>
