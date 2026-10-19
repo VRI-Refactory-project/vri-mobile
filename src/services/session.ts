@@ -45,6 +45,11 @@ export async function endSession() {
   await deleteItem(REFRESH_KEY);
 }
 
+/** Replace the signed-in user after the API returns a fresh copy (e.g. once the email is verified). */
+export function updateCurrentUser(user: AuthUser) {
+  currentUser = user;
+}
+
 export function getCurrentUser() {
   return currentUser;
 }

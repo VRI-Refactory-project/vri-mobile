@@ -25,6 +25,7 @@ import {
   uploadCertification,
   type PickedFile,
 } from "../services/interpreter";
+import { needsEmailVerification } from "../services/auth";
 import { getCurrentUser } from "../services/session";
 
 type Errors = { document?: string; certificate_type?: string; issuing_organisation?: string };
@@ -96,7 +97,9 @@ export default function CertificationUploadScreen() {
     setSubmitting(true);
     try {
       await uploadCertification(file, certificateType, organisation);
-      router.replace("/pending");
+      // Registration order: account, certificates, verify email, then wait for the admin review.
+      const current = getCurrentUser();
+      router.replace(current && needsEmailVerification(current) ? "/verify-email" : "/pending");
     } catch (error) {
       setSubmitting(false);
       if (error instanceof ApiError) {
@@ -127,7 +130,7 @@ export default function CertificationUploadScreen() {
     <SafeAreaView style={styles.screen}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.step}>Step 2 of 3</Text>
+          <Text style={styles.step}>Step 3 of 3</Text>
           <Text style={styles.title} accessibilityRole="header">
             Upload your certification
           </Text>

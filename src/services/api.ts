@@ -72,6 +72,11 @@ export function postJson<T>(path: string, body: unknown): Promise<T> {
   return request<T>(path, { method: "POST", body });
 }
 
+/** Signed-in POST with a JSON body (e.g. email verification). */
+export function postAuthedJson<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, { method: "POST", body, auth: true });
+}
+
 /** Signed-in GET. */
 export function getJson<T>(path: string): Promise<T> {
   return request<T>(path, { method: "GET", auth: true });

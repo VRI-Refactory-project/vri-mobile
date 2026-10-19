@@ -9,13 +9,22 @@ import {
   StatusBar,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { styles } from "./LandingScreen.styles";
 
 export default function LandingScreen() {
   // These only print a message for now. We'll connect them to screens later.
-  const handleLogin = () => console.log("Login clicked");
-  const handleSignUp = () => console.log("Sign Up clicked");
-  const handleGetStarted = () => console.log("Get Started clicked");
+const handleLogin = () => {
+  router.push("/login");
+};
+
+const handleSignUp = () => {
+  router.push("/signup");
+};
+
+const handleGetStarted = () => {
+  router.push("/signup");
+};
 
   return (
     <SafeAreaView style={styles.container}>
