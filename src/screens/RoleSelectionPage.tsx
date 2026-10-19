@@ -29,7 +29,7 @@ const BACKGROUND_ZOOM = 1; // 1 = no zoom; bigger = the background photo is zoom
 // When it exists, put its route here, for example "/interpreter-signup".
 const ROLE_ROUTES: Record<"deaf" | "interpreter", string | null> = {
   deaf: "/signup",
-  interpreter: null,
+  interpreter: "/interpreter-signup", 
 };
 
 const ROLES = [

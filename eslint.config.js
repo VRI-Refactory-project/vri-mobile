@@ -4,7 +4,10 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([
   expoConfig,
+  { ignores: ["dist/*"] },
   {
-    ignores: ["dist/*", "web-build/*", ".expo/*"],
+    rules: {
+      "import/no-unresolved": ["error", { ignore: ["^lucide-react-native$"] }],
+    },
   },
 ]);

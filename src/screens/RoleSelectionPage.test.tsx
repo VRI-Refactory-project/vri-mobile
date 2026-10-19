@@ -55,14 +55,13 @@ describe("RoleSelectionPage", () => {
     expect(router.push).toHaveBeenCalledWith("/signup");
   });
 
-  it("says interpreter registration is coming soon, until that screen exists", async () => {
+  it("goes to the interpreter signup when that role is picked", async () => {
     await render(<RoleSelectionPage />);
     await fireEvent.press(
       screen.getByRole("button", { name: /^interpreter/i }),
     );
 
-    expect(Alert.alert).toHaveBeenCalled();
-    expect(router.push).not.toHaveBeenCalled();
+    expect(router.push).toHaveBeenCalledWith("/interpreter-signup");
   });
 
   it("goes back when Back is pressed", async () => {
