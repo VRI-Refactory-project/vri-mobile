@@ -6,58 +6,89 @@ import type { AuthUser } from "./auth";
 const ACCESS_KEY = "vri.access_token";
 const REFRESH_KEY = "vri.refresh_token";
 
-// SecureStore has no web implementation, so on web the tokens only live in memory for this tab.
+// Native devices use SecureStore.
+// Web tokens stay in memory and are lost when the page reloads.
 const isWeb = Platform.OS === "web";
 const webMemory = new Map<string, string>();
 
-// Signed-in user for this app session. Not persisted: restoring a session on launch comes later.
+// Current user exists only in memory for this app session.
 let currentUser: AuthUser | null = null;
 
-async function setItem(key: string, value: string) {
+async function setItem(key: string, value: string): Promise<void> {
   if (isWeb) {
     webMemory.set(key, value);
     return;
   }
+
   await SecureStore.setItemAsync(key, value);
 }
 
-async function getItem(key: string) {
-  return isWeb ? (webMemory.get(key) ?? null) : SecureStore.getItemAsync(key);
+async function getItem(key: string): Promise<string | null> {
+  if (isWeb) {
+    return webMemory.get(key) ?? null;
+  }
+
+  return SecureStore.getItemAsync(key);
 }
 
-async function deleteItem(key: string) {
+async function deleteItem(key: string): Promise<void> {
   if (isWeb) {
     webMemory.delete(key);
     return;
   }
+
   await SecureStore.deleteItemAsync(key);
 }
 
-export async function startSession(access: string, refresh: string, user: AuthUser) {
+/**
+ * Start a signed-in session after authentication succeeds.
+ */
+export async function startSession(
+  access: string,
+  refresh: string,
+  user: AuthUser,
+): Promise<void> {
+  // Store both tokens before marking the user as signed in.
   await setItem(ACCESS_KEY, access);
   await setItem(REFRESH_KEY, refresh);
+
   currentUser = user;
 }
 
-export async function endSession() {
+/**
+ * End the current session and clear stored tokens.
+ */
+export async function endSession(): Promise<void> {
   currentUser = null;
-  await deleteItem(ACCESS_KEY);
-  await deleteItem(REFRESH_KEY);
+
+  await Promise.all([deleteItem(ACCESS_KEY), deleteItem(REFRESH_KEY)]);
 }
 
-/** Replace the signed-in user after the API returns a fresh copy (e.g. once the email is verified). */
-export function updateCurrentUser(user: AuthUser) {
+/**
+ * Replace the current in-memory user after an API update.
+ */
+export function updateCurrentUser(user: AuthUser): void {
   currentUser = user;
 }
 
-export function getCurrentUser() {
+/**
+ * Return the current in-memory user, or null if unavailable.
+ */
+export function getCurrentUser(): AuthUser | null {
   return currentUser;
 }
 
-export function getAccessToken() {
+/**
+ * Return the stored access token.
+ */
+export function getAccessToken(): Promise<string | null> {
   return getItem(ACCESS_KEY);
 }
 
-export function getRefreshToken() {
+/**
+ * Return the stored refresh token.
+ * Token refresh is not implemented by this function.
+ */
+export function getRefreshToken(): Promise<string | null> {
   return getItem(REFRESH_KEY);
 }
